@@ -6,6 +6,7 @@ let router = express.Router();
 
 let initWebRoutes = (app) => {
   router.post("/", upload.array('images'), ImageController.ImageConverted);
+  router.get("/del", ImageController.removeFileInFolder);
   return app.use('/', router);
 }
 

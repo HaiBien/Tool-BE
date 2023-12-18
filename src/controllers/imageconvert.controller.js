@@ -7,7 +7,7 @@ import upload_path from '../../uploads/_path';
 require('dotenv').config();
 
 
-let ImageConverted = async (req, res) => {
+const ImageConverted = async (req, res) => {
   try {
     const {body} = req
     const type = body.format;
@@ -27,10 +27,6 @@ let ImageConverted = async (req, res) => {
       }
       resizedImages.push({value: resizedImage, fileName: file.filename});
     }
-    req.files.forEach((file) => {
-      console.log('file', file)
-      fs.unlinkSync(path.join(upload_path, file.filename));
-    });
     return res.json({images: resizedImages, type})
   } catch (error) {
     console.log(error)
@@ -38,6 +34,27 @@ let ImageConverted = async (req, res) => {
   }
 };
 
+function removeFileInFolder(req, res) {
+  try {
+    fs.readdir(upload_path, (err, files) => {
+        if (err) return;
+        files.forEach((file) => {
+          if (file !== '_path.js') {
+            fs.unlink(path.join(upload_path, file), (err) => {
+              if (err) console.log(err)
+            })
+          }
+        });
+      }
+    )
+    return res.json({success: true})
+  } catch (error) {
+    console.log(error)
+    res.status(500).send('Đã xảy ra lỗi khi xóa bộ nhớ đệm.');
+  }
+}
+
 module.exports = {
   ImageConverted: ImageConverted,
+  removeFileInFolder: removeFileInFolder,
 }
